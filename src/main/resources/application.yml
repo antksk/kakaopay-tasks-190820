@@ -40,3 +40,8 @@ spring:
     url: jdbc:h2:file:~/kakaopay-tasks-190820
     driver-class-name: org.h2.Driver
     username: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    showSql: false
+    properties:
+      hibernate.hbm2ddl.auto: update
