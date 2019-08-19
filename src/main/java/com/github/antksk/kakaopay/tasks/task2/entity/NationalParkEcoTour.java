@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import org.springframework.util.StringUtils;
 
 import com.github.antksk.kakaopay.tasks.task2.SiSggEmd;
+import com.github.antksk.kakaopay.tasks.task2.controller.json.Task2Json;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,15 +41,17 @@ import lombok.ToString;
     initialValue = 1, allocationSize = 1
 )
 @Table(name="t_ntl_park")
-public class NationalParkEcoTour {
+public class NationalParkEcoTour implements Task2Json {
     @Id
     @GeneratedValue(
         generator = "ntl_park_seq_generator",
         strategy = GenerationType.SEQUENCE)
     private long id;
 
+
     @Column(name = "region", length = 50, nullable = false)
     private String region;
+
 
     /**
      * 프로그램 명
@@ -88,6 +91,7 @@ public class NationalParkEcoTour {
     @Setter
     @Enumerated
     private FormalServiceRegion formalServiceRegion;
+
 
 
     public int programIntroductionCount(String keyword){

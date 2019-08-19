@@ -2,7 +2,6 @@ package com.github.antksk.kakaopay.tasks.task2.unit;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,10 +19,5 @@ public class NationalParkEcoTourRegionRemoveSpecialStringTest {
         assertThat(removeSpecialString("경상북도 경주시,,,,, ")).isEqualTo("경상북도 경주시");
         assertThat(removeSpecialString("경상북도 경주시    ")).isEqualTo("경상북도 경주시");
         assertThat(removeSpecialString("강원도 원주시 소초면 학곡리 900번지")).isEqualTo("강원도 원주시 소초면 학곡리 900번지");
-    }
-
-    @Test
-    public void test2(){
-        log.debug("{}", StringUtils.quote("atb"));
     }
 }

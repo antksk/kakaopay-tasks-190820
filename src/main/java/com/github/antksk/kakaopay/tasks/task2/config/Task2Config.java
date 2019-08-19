@@ -13,4 +13,5 @@ public class Task2Config {
     public Komoran komoran(){
         return new Komoran(DEFAULT_MODEL.LIGHT);
     }
+
 }

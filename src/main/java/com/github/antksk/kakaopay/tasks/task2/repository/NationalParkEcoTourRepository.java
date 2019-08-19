@@ -11,6 +11,8 @@ import com.github.antksk.kakaopay.tasks.task2.entity.NationalParkEcoTour;
 
 public interface NationalParkEcoTourRepository extends JpaRepository<NationalParkEcoTour, Long> {
 
+    Page<NationalParkEcoTour> findByRegionContaining(String region, Pageable pageable);
+
     // 프로그램 소개 조회
     Page<NationalParkEcoTour> findByProgramIntroductionContaining(String keyword, Pageable pageable);
     Set<NationalParkEcoTour> findByProgramIntroductionContaining(String keyword);

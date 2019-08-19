@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.antksk.kakaopay.tasks.task2.controller.json.ProgramIntroductionCountJson;
+import com.github.antksk.kakaopay.tasks.task2.controller.json.ProgramPageDecorator;
 import com.github.antksk.kakaopay.tasks.task2.entity.FormalServiceRegion;
 import com.github.antksk.kakaopay.tasks.task2.entity.NationalParkEcoTour;
 import com.github.antksk.kakaopay.tasks.task2.entity.ServiceRegion;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +56,11 @@ public class Task2SaveService {
     }
 
     @Transactional(readOnly = true)
+    public ProgramPageDecorator<NationalParkEcoTour> findByRegion(String region, Pageable pageable){
+        return new ProgramPageDecorator<NationalParkEcoTour>(nationalParkEcoTourRepository.findByRegionContaining(region, pageable));
+    }
+
+    @Transactional(readOnly = true)
     public FormalServiceRegion convertFormalServiceRegion(Optional<String> optionalFormalRegion){
         return optionalFormalRegion /** CSV 파일에서 서비스 지역 정보를 찾음 */
             .map(serviceRegionRepository::findFirstByRegionContainingOrderByCode)
@@ -63,6 +71,8 @@ public class Task2SaveService {
             .map(ServiceRegion::getFormalServiceRegion)
             .orElse(FormalServiceRegion.empty());
     }
+
+
 
 
     private static final String DEFAULT_ARRAY_JSON = "[]";
@@ -83,11 +93,17 @@ public class Task2SaveService {
 
 
     // 프로그램 소개 컬럼의 특정 문자열 포함된 레코드에서 서비스 지역 개수를 세어 출력
-    public Map<FormalServiceRegion, Integer> programIntroductionCount(final String keyword){
+    public Set<ProgramIntroductionCountJson> programIntroductionCount(final String keyword){
         return nationalParkEcoTourRepository.findByProgramIntroductionContaining(keyword)
             .stream()
-            .collect(groupingBy(NationalParkEcoTour::getFormalServiceRegion,
-                                summingInt(e -> e.programIntroductionCount(keyword))));
+            .collect(
+                groupingBy(
+                    NationalParkEcoTour::getFormalServiceRegion,
+                    summingInt(e -> e.programIntroductionCount(keyword)))
+            )
+            .entrySet()
+                 .stream().map(e->ProgramIntroductionCountJson.of(e.getKey().getRegion(),e.getValue()))
+            .collect(toSet());
     }
 
     // 모든 레코드에 프로그램 상세 정보를 읽어와서 입력 단어의 출현빈도수를 계산
