@@ -3,6 +3,7 @@
 - KOMORAN 3.3.4 : keyword 생성
 - guava 28.0
 - commons-lang3 3.9
+- jackson-dataformat-csv 2.9.9
 - db : h2 
 
 # 문제해결 전략
@@ -12,12 +13,15 @@
   - 프로그램 상세 정보는 비교할 택스트가 많을 것으로 생각되어, KOMORAN을 사용하여 
   키워드를 미리 뽑아서 keywordJson 필드에 저장 후 검색하는 방식을 사용하음
   - 키워드 검색 대상은 명사, 동사 형태를 사용함
+- CSV 파일 로드는 jackson-dataformat-csv를 사용하였으며, task2.integration.csv 패키지에서 확인 가능함
+- CSV 파일이 생성되고 나면, 생성된 객체를 기반으로 ToEntity 인터페이스를 통해, Entity 클래스를 생성하여 DB에 저장함
+- DB에 저장될때, 키워드 생성(keywordJson) 및 서비스 지역 정보(FormalServiceRegion)가 설정됨 
 
 # 빌드 및 실행 방법
 ### 테스트
 - 테스트 케이스는 integration 테스트와 unit 테스트로 구성되어 있음
-- test.integration 패키지에 있는 테스트는 db와 연결되어 있거나 서비스등의 테스트가 필요할때 사용됨
-- test.unit은 순수하게 자바 코드 테스트용으로 사용함
+- task2.integration 패키지에 있는 테스트는 db와 연결되어 있거나 서비스등의 테스트가 필요할때 사용됨
+- task2.unit은 순수하게 자바 코드 테스트용으로 사용함
 - 
 
 ### 빌드 및 실행
