@@ -1,7 +1,5 @@
 package com.github.antksk.kakaopay.tasks.task2.integration.save;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,17 +12,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.antksk.kakaopay.tasks.task2.entity.FormalServiceRegion;
 import com.github.antksk.kakaopay.tasks.task2.entity.NationalParkEcoTour;
-import com.github.antksk.kakaopay.tasks.task2.entity.ServiceRegion;
-import com.github.antksk.kakaopay.tasks.task2.integration.AdministrativeDistrictCsvFile;
-import com.github.antksk.kakaopay.tasks.task2.integration.NationalParkEcoTourCsvFile;
-import com.github.antksk.kakaopay.tasks.task2.entity.ToEntity;
+import com.github.antksk.kakaopay.tasks.task2.integration.CSVFileToH2DbUploader;
 import com.github.antksk.kakaopay.tasks.task2.repository.ServiceRegionRepository;
 import com.github.antksk.kakaopay.tasks.task2.service.Task2SaveService;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static com.google.common.collect.ImmutableList.toImmutableList;
-import static java.util.stream.Collectors.toList;
 
 @DisplayName("생태 정보 서비스 저장 테스트")
 @Slf4j
@@ -41,31 +33,13 @@ public class NationalParkEcoTourSaveTest {
 
     @BeforeEach
     public void save_all(){
-        List<ServiceRegion> districts = AdministrativeDistrictCsvFile.load()
-                                                                     .stream().map(AdministrativeDistrictCsvFile::entity)
-                                                                     .collect(toImmutableList());
-
-        serviceRegionRepository.saveAll(districts);
+        CSVFileToH2DbUploader.serviceRegion(serviceRegionRepository);
+        CSVFileToH2DbUploader.nationalParkEcoTour(task2SaveService);
     }
-
-    private final List<NationalParkEcoTourCsvFile> nationalParkEcoTourCsvFiles = NationalParkEcoTourCsvFile.load();
-
-    private final List<NationalParkEcoTour> nationalParkEcoTours = nationalParkEcoTourCsvFiles.stream().map(ToEntity::entity).collect(toList());
-
-
-
 
     @DisplayName("생태 정보 서비스 저장")
     @Test
-    public void test2(){
-        for (NationalParkEcoTour nationalParkEcoTour : nationalParkEcoTours) {
-            // 행정 구역형태의 지역 정보로 변경
-            FormalServiceRegion formalServiceRegion = task2SaveService.convertFormalServiceRegion(nationalParkEcoTour.formalRegion());
-            nationalParkEcoTour.setFormalServiceRegion(formalServiceRegion);
-            nationalParkEcoTour.setKeywordJson(task2SaveService.programIntroductionDetailsKeywordJson(nationalParkEcoTour.getProgramIntroductionDetails()));
-        }
-
-        task2SaveService.save(nationalParkEcoTours);
+    public void test(){
         FormalServiceRegion 강원도_원주시_소초면 = FormalServiceRegion.create("3202031", "강원도 원주시 소초면");
         Page<NationalParkEcoTour> nationalParkEcoTourPage = task2SaveService.findByFormalServiceRegion(강원도_원주시_소초면,
                                                                                            PageRequest.of(0, 20));

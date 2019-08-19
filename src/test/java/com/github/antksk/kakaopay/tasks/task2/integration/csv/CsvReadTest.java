@@ -3,9 +3,6 @@ package com.github.antksk.kakaopay.tasks.task2.integration.csv;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.github.antksk.kakaopay.tasks.task2.integration.AdministrativeDistrictCsvFile;
-import com.github.antksk.kakaopay.tasks.task2.integration.NationalParkEcoTourCsvFile;
-
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

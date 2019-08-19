@@ -1,8 +1,6 @@
 package com.github.antksk.kakaopay.tasks.task2.integration.keyword;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -19,10 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.antksk.kakaopay.tasks.task2.entity.FormalServiceRegion;
 import com.github.antksk.kakaopay.tasks.task2.entity.NationalParkEcoTour;
-import com.github.antksk.kakaopay.tasks.task2.entity.ServiceRegion;
-import com.github.antksk.kakaopay.tasks.task2.integration.AdministrativeDistrictCsvFile;
-import com.github.antksk.kakaopay.tasks.task2.integration.NationalParkEcoTourCsvFile;
-import com.github.antksk.kakaopay.tasks.task2.entity.ToEntity;
+import com.github.antksk.kakaopay.tasks.task2.integration.CSVFileToH2DbUploader;
 import com.github.antksk.kakaopay.tasks.task2.repository.NationalParkEcoTourRepository;
 import com.github.antksk.kakaopay.tasks.task2.repository.ServiceRegionRepository;
 import com.github.antksk.kakaopay.tasks.task2.service.KeywordService;
@@ -30,10 +25,8 @@ import com.github.antksk.kakaopay.tasks.task2.service.Task2SaveService;
 
 import lombok.extern.slf4j.Slf4j;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.summingInt;
-import static java.util.stream.Collectors.toList;
 
 @DisplayName("생태 정보 서비스  테스트")
 @Slf4j
@@ -57,41 +50,10 @@ public class NationalParkEcoTourKeywordTest {
     @DisplayName("행정구역 지역 정보 및 생태 정보 서비스 저장")
     @BeforeEach
     public void save_all(){
-        List<ServiceRegion> districts = AdministrativeDistrictCsvFile.load()
-                                                                     .stream().map(AdministrativeDistrictCsvFile::entity)
-                                                                     .collect(toImmutableList());
-
-        serviceRegionRepository.saveAll(districts);
-
-
-        for (NationalParkEcoTour nationalParkEcoTour : nationalParkEcoTours) {
-            // 행정 구역형태의 지역 정보로 변경
-            Optional<String> optionalFormalRegion = nationalParkEcoTour.formalRegion();
-            FormalServiceRegion formalServiceRegion = task2SaveService.convertFormalServiceRegion(optionalFormalRegion);
-            nationalParkEcoTour.setFormalServiceRegion(formalServiceRegion);
-            nationalParkEcoTour.setKeywordJson(task2SaveService.programIntroductionDetailsKeywordJson(nationalParkEcoTour.getProgramIntroductionDetails()));
-
-        }
-
-        task2SaveService.save(nationalParkEcoTours);
+        CSVFileToH2DbUploader.serviceRegion(serviceRegionRepository);
+        CSVFileToH2DbUploader.nationalParkEcoTour(task2SaveService);
     }
 
-
-    private final List<NationalParkEcoTourCsvFile> nationalParkEcoTourCsvFiles = NationalParkEcoTourCsvFile.load();
-
-    private final List<NationalParkEcoTour> nationalParkEcoTours = nationalParkEcoTourCsvFiles.stream().map(ToEntity::entity).collect(toList());
-
-    @DisplayName("각 영역별 키워드 생성 테스트")
-    @Test
-    public void test(){
-        nationalParkEcoTours.forEach(e->{
-            log.debug("program : {}\n - {}\n - {}\n - {}", e.getProgramName()
-                ,  keywordService.analyze(e.getProgramName())
-                ,  keywordService.analyze(e.getProgramIntroduction())
-                ,  keywordService.analyze(e.getProgramIntroductionDetails())
-            );
-        });
-    }
 
 
     @DisplayName("1페이지의 프로그램 소개 키워드 갯수 확인")

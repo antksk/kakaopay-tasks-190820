@@ -10,16 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.github.antksk.kakaopay.tasks.task2.entity.ServiceRegion;
-import com.github.antksk.kakaopay.tasks.task2.integration.AdministrativeDistrictCsvFile;
-import com.github.antksk.kakaopay.tasks.task2.integration.NationalParkEcoTourCsvFile;
 import com.github.antksk.kakaopay.tasks.task2.entity.ToEntity;
+import com.github.antksk.kakaopay.tasks.task2.integration.CSVFileToH2DbUploader;
+import com.github.antksk.kakaopay.tasks.task2.integration.csv.NationalParkEcoTourCsvFile;
 import com.github.antksk.kakaopay.tasks.task2.repository.NationalParkEcoTourRepository;
 import com.github.antksk.kakaopay.tasks.task2.repository.ServiceRegionRepository;
 
 import lombok.extern.slf4j.Slf4j;
-
-import static com.google.common.collect.ImmutableList.toImmutableList;
 
 @DisplayName("생태 정보 서비스 지역을 기준으로 공식적인 지역(행정구역) 정보 탐색 테스트")
 @Slf4j
@@ -35,11 +32,7 @@ public class NationalParkEcoTourRegionFindTest {
     @DisplayName("행정구역 지역 정보 저장")
     @BeforeEach
     public void save_service_region(){
-        List<ServiceRegion> districts = AdministrativeDistrictCsvFile.load()
-                                                                     .stream().map(AdministrativeDistrictCsvFile::entity)
-                                                                     .collect(toImmutableList());
-
-        serviceRegionRepository.saveAll(districts);
+        CSVFileToH2DbUploader.serviceRegion(serviceRegionRepository);
     }
 
 
