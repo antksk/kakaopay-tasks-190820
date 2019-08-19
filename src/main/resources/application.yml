@@ -1,0 +1,42 @@
+spring:
+  profiles:
+    active: local
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.hibernate : ERROR
+
+    com.github.antksk.kakaopay: DEBUG
+
+---
+spring:
+  profiles: local
+  h2:
+    console:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:kakaopay-tasks-190820
+    driver-class-name: org.h2.Driver
+    username: sa
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    showSql: false
+    properties:
+      hibernate.hbm2ddl.auto: update
+
+  devtools:
+    livereload:
+      enabled: true
+
+
+---
+spring:
+  profiles: dev
+  h2:
+    console:
+      enabled: false
+  datasource:
+    url: jdbc:h2:file:~/kakaopay-tasks-190820
+    driver-class-name: org.h2.Driver
+    username: sa
