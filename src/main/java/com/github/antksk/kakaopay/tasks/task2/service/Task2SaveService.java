@@ -1,6 +1,7 @@
 package com.github.antksk.kakaopay.tasks.task2.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,6 +21,9 @@ import com.github.antksk.kakaopay.tasks.task2.repository.NationalParkEcoTourRepo
 import com.github.antksk.kakaopay.tasks.task2.repository.ServiceRegionRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.summingInt;
 
 @Service
 @RequiredArgsConstructor
@@ -75,6 +79,23 @@ public class Task2SaveService {
         }
 
         return DEFAULT_ARRAY_JSON;
+    }
+
+
+    // 프로그램 소개 컬럼의 특정 문자열 포함된 레코드에서 서비스 지역 개수를 세어 출력
+    public Map<FormalServiceRegion, Integer> programIntroductionCount(final String keyword){
+        return nationalParkEcoTourRepository.findByProgramIntroductionContaining(keyword)
+            .stream()
+            .collect(groupingBy(NationalParkEcoTour::getFormalServiceRegion,
+                                summingInt(e -> e.programIntroductionCount(keyword))));
+    }
+
+    // 모든 레코드에 프로그램 상세 정보를 읽어와서 입력 단어의 출현빈도수를 계산
+    public int programIntroductionCountDetail(final String keyword){
+        return nationalParkEcoTourRepository.findByKeywordJsonContaining(keyword)
+                                            .stream()
+                                            .mapToInt(e -> e.programIntroductionDetailCount(keyword))
+                                            .sum();
     }
 
 }

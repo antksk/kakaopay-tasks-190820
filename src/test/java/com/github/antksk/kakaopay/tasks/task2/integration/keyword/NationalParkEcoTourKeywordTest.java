@@ -3,6 +3,7 @@ package com.github.antksk.kakaopay.tasks.task2.integration.keyword;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.github.antksk.kakaopay.tasks.task2.entity.FormalServiceRegion;
@@ -67,6 +69,7 @@ public class NationalParkEcoTourKeywordTest {
             Optional<String> optionalFormalRegion = nationalParkEcoTour.formalRegion();
             FormalServiceRegion formalServiceRegion = task2SaveService.convertFormalServiceRegion(optionalFormalRegion);
             nationalParkEcoTour.setFormalServiceRegion(formalServiceRegion);
+            nationalParkEcoTour.setKeywordJson(task2SaveService.programIntroductionDetailsKeywordJson(nationalParkEcoTour.getProgramIntroductionDetails()));
 
         }
 
@@ -106,8 +109,44 @@ public class NationalParkEcoTourKeywordTest {
                                                                                                      summingInt(e -> e.programIntroductionCount(keyword))));
 
 
-        log.debug("### bbb : {}", collect);
+        while(byProgramIntroductionContaining.hasNext()){
+            Pageable pageable = byProgramIntroductionContaining.nextPageable();
+
+            log.debug("{}", pageable);
+        }
     }
 
+
+    @DisplayName("전체의 프로그램 소개 키워드 갯수 확인")
+    @Test
+    public void test3(){
+
+        final String keyword = "세계문화유산";
+        Set<NationalParkEcoTour> byProgramIntroductionContaining = nationalParkEcoTourRepository.findByProgramIntroductionContaining(
+            keyword);
+
+        Map<FormalServiceRegion, Integer> collect = byProgramIntroductionContaining
+            .stream()
+            .collect(groupingBy(NationalParkEcoTour::getFormalServiceRegion,
+                                summingInt(e -> e.programIntroductionCount(keyword))));
+
+
+
+        log.debug("{}", collect);
+    }
+
+
+    @DisplayName("전체의 프로그램 소개 상세 키워드 갯수 확인")
+    @Test
+    public void test4(){
+
+        final String keyword = "문화";
+        Set<NationalParkEcoTour> byProgramIntroductionContainingDetail = nationalParkEcoTourRepository.findByKeywordJsonContaining(
+            keyword);
+
+        byProgramIntroductionContainingDetail.forEach(e->log.debug("k : {}, {}",e.getKeywordJson(), e.programIntroductionDetailCount(keyword)));
+        int sum = byProgramIntroductionContainingDetail.stream().mapToInt(e -> e.programIntroductionDetailCount(keyword)).sum();
+        log.debug("keyword : {} => {}", keyword, sum);
+    }
 
 }

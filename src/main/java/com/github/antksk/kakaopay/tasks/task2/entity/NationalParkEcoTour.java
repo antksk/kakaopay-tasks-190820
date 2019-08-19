@@ -96,7 +96,7 @@ public class NationalParkEcoTour {
 
     public int programIntroductionDetailCount( String keyword) {
         // 프로그램 상세 정보는 내용 동사, 일반명사, 고유명사, 의존명사에 대해서 미리 키워드로 만들어 놓음
-        return StringUtils.countOccurrencesOf(keywordJson, keyword);
+        return StringUtils.countOccurrencesOf(keywordJson, String.format("\"%s\"",keyword));
     }
 
     @Builder
