@@ -82,7 +82,7 @@ public class AdministrativeDistrictCsvFile implements ToEntity<ServiceRegion> {
         private final CsvSchema csvSchema;
 
         CSV(){
-            filePath = "classpath:task2/integration/행정구역분류코드.csv";
+            filePath = "classpath:task2/integration/ad.csv";
             csvSchema = CsvSchema.builder()
                                   .addColumn("siCd", CsvSchema.ColumnType.STRING)
                                   .addColumn("siNm", CsvSchema.ColumnType.STRING)

@@ -58,7 +58,7 @@ public class NationalParkEcoTourCsvFile implements ToEntity<NationalParkEcoTour>
         private final CsvSchema csvSchema;
 
         private CSV(){
-            filePath = "classpath:task2/integration/서버개발_사전과제2_2017년_국립공원_생태관광_정보.csv";
+            filePath = "classpath:task2/integration/task2.csv";
             csvSchema = CsvSchema.builder()
                                   .addColumn("row", CsvSchema.ColumnType.NUMBER)
                                   .addColumn("programName", CsvSchema.ColumnType.STRING)
